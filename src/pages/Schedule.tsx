@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useSubjectContext } from "@/context/SubjectContext";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
@@ -20,7 +20,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 import { generateSchedule } from "@/utils/scheduleGenerator";
+import { studyOptimizer, StudyMetrics } from "@/utils/mlUtils";
 import ScheduleTimeline from "@/components/ScheduleTimeline";
 
 const Schedule = () => {
@@ -30,6 +33,20 @@ const Schedule = () => {
   const [endDate, setEndDate] = useState<Date>(addDays(new Date(), 14));
   const [dailyHours, setDailyHours] = useState<number>(2);
   const [preferredTimeOfDay, setPreferredTimeOfDay] = useState<'morning' | 'afternoon' | 'evening' | 'distributed'>('distributed');
+  const [useML, setUseML] = useState<boolean>(true);
+  
+  // On component mount, check for user study patterns
+  useEffect(() => {
+    if (subjects.length > 0 && useML) {
+      // Get estimated best time from ML model if we have metrics
+      const metrics: StudyMetrics[] = JSON.parse(localStorage.getItem("studyMetrics") || "[]");
+      if (metrics.length >= 5) {
+        const suggestedTime = studyOptimizer.predictBestTimeOfDay(metrics);
+        setPreferredTimeOfDay(suggestedTime);
+        toast.info(`Based on your past study sessions, we recommend studying in the ${suggestedTime}`);
+      }
+    }
+  }, [subjects, useML]);
   
   const handleGenerateSchedule = () => {
     if (subjects.length === 0) {
@@ -42,8 +59,25 @@ const Schedule = () => {
       return;
     }
     
+    // Prepare subjects with ML-optimized time if enabled
+    let scheduledSubjects = [...subjects];
+    
+    if (useML) {
+      // Apply ML recommendations to subjects
+      scheduledSubjects = subjects.map(subject => {
+        const optimalDuration = studyOptimizer.predictOptimalDuration(subject.id, subject.difficulty);
+        return {
+          ...subject,
+          // If we have ML data, use it to influence the time to spend
+          timeToSpend: optimalDuration > 0 ? optimalDuration : subject.timeToSpend
+        };
+      });
+      
+      toast.success("Using ML to optimize your study schedule based on past performance");
+    }
+    
     const newSchedule = generateSchedule({
-      subjects,
+      subjects: scheduledSubjects,
       startDate,
       endDate,
       dailyHours,
@@ -52,6 +86,33 @@ const Schedule = () => {
     
     updateSchedule(newSchedule);
     toast.success("Study schedule generated successfully");
+  };
+  
+  // Log completion metrics for ML
+  const handleMarkCompleted = (id: string, completed: boolean) => {
+    markScheduleCompleted(id, completed);
+    
+    if (completed && useML) {
+      // Find the schedule entry
+      const entry = schedule.find(e => e.id === id);
+      if (entry) {
+        // Find the subject
+        const subject = subjects.find(s => s.id === entry.subjectId);
+        if (subject) {
+          // Log a basic metric (in a real app, you'd collect actual performance data)
+          const metrics: StudyMetrics = {
+            subjectId: subject.id,
+            studyTime: entry.duration,
+            performance: 80, // Assuming good performance since it was completed
+            fatigue: 30, // Default moderate fatigue
+            timestamp: new Date()
+          };
+          
+          // Add to ML model
+          studyOptimizer.addMetrics(metrics);
+        }
+      }
+    }
   };
   
   return (
@@ -132,6 +193,18 @@ const Schedule = () => {
                     </SelectContent>
                   </Select>
                 </div>
+                
+                <div className="flex items-center space-x-2">
+                  <Switch 
+                    id="use-ml" 
+                    checked={useML} 
+                    onCheckedChange={setUseML} 
+                  />
+                  <Label htmlFor="use-ml">Use AI optimization</Label>
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  AI will analyze your past study sessions to optimize your schedule
+                </p>
               </CardContent>
               <CardFooter>
                 <Button 
@@ -150,7 +223,7 @@ const Schedule = () => {
                 <ScheduleTimeline
                   schedule={schedule}
                   subjects={subjects}
-                  onMarkCompleted={markScheduleCompleted}
+                  onMarkCompleted={handleMarkCompleted}
                 />
               ) : (
                 <div className="bg-muted/30 rounded-lg p-12 text-center h-full flex flex-col items-center justify-center">

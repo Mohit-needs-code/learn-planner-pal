@@ -1,126 +1,123 @@
 
-import { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/context/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { useToast } from "@/components/ui/use-toast";
-import { AlertCircle } from "lucide-react";
+import { toast } from "sonner";
+import { BookOpen } from "lucide-react";
 
 const Login = () => {
-  const [activeTab, setActiveTab] = useState<"login" | "signup">("login");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [error, setError] = useState("");
-  const { toast } = useToast();
   const navigate = useNavigate();
+  const { login, isAuthenticated } = useAuth();
+  const [email, setEmail] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [previousLogin, setPreviousLogin] = useState<string | null>(null);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  // Predict user login from previous sessions
+  useEffect(() => {
+    // Check for previous logins
+    const lastLogin = localStorage.getItem("lastLoginEmail");
+    if (lastLogin) {
+      setPreviousLogin(lastLogin);
+    }
+
+    // If already authenticated, redirect
+    if (isAuthenticated) {
+      navigate("/subjects");
+    }
+  }, [isAuthenticated, navigate]);
+
+  const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    setError("");
+    setIsLoading(true);
 
-    // Basic validation
-    if (!email || !password) {
-      setError("Please fill in all fields");
+    if (!email || !email.includes("@")) {
+      toast.error("Please enter a valid email address");
+      setIsLoading(false);
       return;
     }
 
-    if (activeTab === "signup" && password !== confirmPassword) {
-      setError("Passwords do not match");
-      return;
-    }
+    // Simple login - in a real app, this would validate with a backend
+    setTimeout(() => {
+      login(email);
+      localStorage.setItem("lastLoginEmail", email);
+      toast.success("Welcome to StudyPlanner!");
+      navigate("/subjects");
+      setIsLoading(false);
+    }, 800);
+  };
 
-    // Mock login/signup for now - would connect to backend auth in a real app
-    // This simulates a successful authentication
-    if (activeTab === "login") {
-      toast({
-        title: "Logged in",
-        description: "Welcome back to your Study Planner!",
-      });
-    } else {
-      toast({
-        title: "Account created",
-        description: "Your account has been created successfully!",
-      });
+  const handleQuickLogin = () => {
+    if (previousLogin) {
+      setEmail(previousLogin);
+      setTimeout(() => {
+        login(previousLogin);
+        toast.success("Welcome back to StudyPlanner!");
+        navigate("/subjects");
+      }, 500);
     }
-
-    // Store some mock data in localStorage to simulate being logged in
-    localStorage.setItem("user", JSON.stringify({ email }));
-    navigate("/subjects");
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-background to-muted/30 p-4">
-      <Card className="w-full max-w-md">
-        <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl font-bold text-center">Study Planner</CardTitle>
-          <CardDescription className="text-center">
-            Enter your details to access your personalized study plan
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as "login" | "signup")}>
-            <TabsList className="grid w-full grid-cols-2 mb-6">
-              <TabsTrigger value="login">Login</TabsTrigger>
-              <TabsTrigger value="signup">Sign Up</TabsTrigger>
-            </TabsList>
-
-            {error && (
-              <Alert variant="destructive" className="mb-4">
-                <AlertCircle className="h-4 w-4" />
-                <AlertDescription>{error}</AlertDescription>
-              </Alert>
-            )}
-
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="your.email@example.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="password">Password</Label>
-                <Input
-                  id="password"
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                />
-              </div>
-
-              {activeTab === "signup" && (
-                <div className="space-y-2">
-                  <Label htmlFor="confirmPassword">Confirm Password</Label>
-                  <Input
-                    id="confirmPassword"
-                    type="password"
-                    value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
-                  />
-                </div>
-              )}
-
-              <Button type="submit" className="w-full">
-                {activeTab === "login" ? "Login" : "Create Account"}
-              </Button>
-            </form>
-          </Tabs>
-        </CardContent>
-        <CardFooter>
-          <p className="text-center text-sm text-muted-foreground w-full">
-            By continuing, you agree to our Terms of Service and Privacy Policy.
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-50 px-4">
+      <div className="w-full max-w-md">
+        <div className="text-center mb-8">
+          <div className="bg-primary text-white p-4 rounded-xl inline-flex shadow-soft">
+            <BookOpen size={32} />
+          </div>
+          <h1 className="text-3xl font-bold mt-4">StudyPlanner</h1>
+          <p className="text-muted-foreground mt-2">
+            AI-powered study scheduling and learning
           </p>
-        </CardFooter>
-      </Card>
+        </div>
+
+        <div className="bg-white p-8 rounded-xl shadow-soft border-0 neomorphism">
+          <h2 className="text-2xl font-bold mb-6">Welcome</h2>
+
+          {previousLogin && (
+            <div className="mb-6 bg-gray-50 p-4 rounded-lg">
+              <p className="text-sm text-muted-foreground mb-2">Previously logged in as:</p>
+              <div className="flex items-center justify-between">
+                <span className="font-medium">{previousLogin}</span>
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={handleQuickLogin}
+                >
+                  Quick Login
+                </Button>
+              </div>
+            </div>
+          )}
+
+          <form onSubmit={handleLogin} className="space-y-4">
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Email</label>
+              <Input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="your@email.com"
+                className="input-focus-effect"
+                required
+              />
+            </div>
+
+            <Button
+              type="submit"
+              className="w-full mt-4"
+              disabled={isLoading}
+            >
+              {isLoading ? "Logging in..." : "Continue with Email"}
+            </Button>
+          </form>
+
+          <p className="text-center text-sm text-muted-foreground mt-6">
+            This is a demo app. No password needed - just enter any email to try it out.
+          </p>
+        </div>
+      </div>
     </div>
   );
 };
