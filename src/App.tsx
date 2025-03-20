@@ -11,6 +11,7 @@ import Index from "./pages/Index";
 import Subjects from "./pages/Subjects";
 import Schedule from "./pages/Schedule";
 import Flashcards from "./pages/Flashcards";
+import NoteTaking from "./pages/NoteTaking";
 import NotFound from "./pages/NotFound";
 import Login from "./pages/Login";
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -35,6 +36,7 @@ const App = () => (
                 <Route path="/subjects" element={<><Navbar /><Subjects /></>} />
                 <Route path="/schedule" element={<><Navbar /><Schedule /></>} />
                 <Route path="/flashcards" element={<><Navbar /><Flashcards /></>} />
+                <Route path="/notes" element={<><Navbar /><NoteTaking /></>} />
               </Route>
               
               <Route path="*" element={<NotFound />} />

@@ -242,3 +242,194 @@ export class AdaptiveFlashcards {
 // Initialize ML models
 export const studyOptimizer = new StudyOptimizer();
 export const adaptiveFlashcards = new AdaptiveFlashcards();
+
+// Note Processing ML System
+export interface ProcessedNotes {
+  summary: string;
+  importantTopics: string[];
+  generatedQuestions: Array<{ question: string; answer: string }>;
+}
+
+// Mock ML processing for notes
+export const processNotes = async (
+  noteText: string,
+  subjectId: string
+): Promise<ProcessedNotes> => {
+  // In a real application, this would call a backend ML service
+  // Here we'll simulate processing with some basic NLP-like operations
+  
+  // Simulate API call with a delay
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      // Extract sentences and paragraphs
+      const sentences = noteText
+        .split(/[.!?]+/)
+        .map(s => s.trim())
+        .filter(s => s.length > 10);
+      
+      const paragraphs = noteText
+        .split(/\n+/)
+        .map(p => p.trim())
+        .filter(p => p.length > 30);
+      
+      // Extract "important" terms (simulate keyword extraction)
+      // In real ML, this would use TF-IDF or similar algorithms
+      const words = noteText.toLowerCase().split(/\W+/).filter(w => w.length > 4);
+      const wordCounts = words.reduce((acc: Record<string, number>, word) => {
+        acc[word] = (acc[word] || 0) + 1;
+        return acc;
+      }, {});
+      
+      // Get top words by frequency as important topics
+      const importantWords = Object.entries(wordCounts)
+        .filter(([word, count]) => count > 1 && word.length > 4)
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 8)
+        .map(([word]) => word.charAt(0).toUpperCase() + word.slice(1));
+      
+      // Generate a summary (in real ML, this would use extractive/abstractive summarization)
+      let summary = "";
+      
+      if (paragraphs.length > 0) {
+        // Take first paragraph as intro
+        summary = paragraphs[0].trim();
+        
+        // Add one middle paragraph if available
+        if (paragraphs.length > 2) {
+          summary += "\n\n" + paragraphs[Math.floor(paragraphs.length / 2)].trim();
+        }
+        
+        // Add conclusion if available
+        if (paragraphs.length > 1) {
+          summary += "\n\n" + paragraphs[paragraphs.length - 1].trim();
+        }
+      } else if (sentences.length > 0) {
+        // If no clear paragraphs, use key sentences
+        const numSentences = Math.min(sentences.length, 5);
+        const step = Math.max(1, Math.floor(sentences.length / numSentences));
+        
+        for (let i = 0; i < sentences.length; i += step) {
+          if (summary) summary += " ";
+          summary += sentences[i] + ".";
+        }
+      } else {
+        summary = "The text was too short to generate a meaningful summary.";
+      }
+      
+      // Generate "questions" from the notes
+      // In real ML, this would use something like T5/GPT for question generation
+      const questions: Array<{ question: string; answer: string }> = [];
+      
+      // Use longer sentences as potential question material
+      const potentialQuestionSentences = sentences.filter(s => s.length > 30);
+      
+      // Limit to 10 questions
+      const numQuestions = Math.min(potentialQuestionSentences.length, 10);
+      
+      // Generate simple questions using patterns
+      for (let i = 0; i < numQuestions; i++) {
+        const sentence = potentialQuestionSentences[i];
+        
+        // Skip if sentence is too similar to previous ones to avoid duplication
+        if (questions.some(q => 
+          sentence.includes(q.question.replace("What is ", "").replace("?", "")) ||
+          sentence.includes(q.answer)
+        )) {
+          continue;
+        }
+        
+        const words = sentence.split(" ");
+        
+        if (words.length < 5) continue;
+        
+        // Determine what kind of question to create
+        const questionType = i % 3;
+        
+        if (questionType === 0 && sentence.includes(" is ")) {
+          // Definition question - "What is X?"
+          const parts = sentence.split(" is ");
+          if (parts[0].length > 3 && parts[1].length > 10) {
+            const subject = parts[0].trim();
+            const definition = parts[1].replace(/[.!?]$/, "").trim();
+            
+            questions.push({
+              question: `What is ${subject}?`,
+              answer: definition
+            });
+          }
+        } else if (questionType === 1) {
+          // Fill-in-the-blank by removing a key term
+          const keyTermIndex = Math.floor(words.length / 2);
+          if (words[keyTermIndex] && words[keyTermIndex].length > 4) {
+            const keyTerm = words[keyTermIndex];
+            const questionText = [...words];
+            questionText[keyTermIndex] = "___________";
+            
+            questions.push({
+              question: questionText.join(" ") + "?",
+              answer: keyTerm
+            });
+          }
+        } else {
+          // Convert statement to question
+          const firstWord = words[0];
+          
+          // Skip sentences that don't work well as questions
+          if (["the", "a", "an", "in", "on", "at"].includes(firstWord.toLowerCase())) {
+            const restOfSentence = words.slice(1).join(" ").replace(/[.!?]$/, "");
+            
+            questions.push({
+              question: `What ${restOfSentence}?`,
+              answer: firstWord
+            });
+          } else if (words.length > 6) {
+            // Create a who/what/why question from longer sentences
+            const answer = words.slice(0, 3).join(" ");
+            const partialQuestion = words.slice(3).join(" ").replace(/[.!?]$/, "");
+            
+            questions.push({
+              question: `Who ${partialQuestion}?`,
+              answer
+            });
+          }
+        }
+      }
+      
+      // If we couldn't generate enough questions, add some generic ones
+      if (questions.length < 5 && importantWords.length > 0) {
+        for (let i = 0; i < Math.min(5, importantWords.length); i++) {
+          const word = importantWords[i];
+          
+          // Find a sentence containing this word
+          const relevantSentence = sentences.find(s => 
+            s.toLowerCase().includes(word.toLowerCase())
+          );
+          
+          if (relevantSentence) {
+            questions.push({
+              question: `What is the significance of ${word}?`,
+              answer: relevantSentence
+            });
+          }
+        }
+      }
+      
+      resolve({
+        summary,
+        importantTopics: importantWords,
+        generatedQuestions: questions.slice(0, 10) // Limit to 10 questions
+      });
+    }, 1500); // Simulate processing time
+  });
+};
+
+// Calculate score for quiz
+export const calculateQuizScore = (
+  userResponses: Record<number, boolean>
+): number => {
+  const total = Object.keys(userResponses).length;
+  if (total === 0) return 0;
+  
+  const correct = Object.values(userResponses).filter(Boolean).length;
+  return Math.round((correct / total) * 100);
+};
