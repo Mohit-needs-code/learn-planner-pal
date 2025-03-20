@@ -3,7 +3,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Calendar, Book, Lightbulb, Clock, ArrowRight } from "lucide-react";
+import { Calendar, Book, Lightbulb, Clock, ArrowRight, FileText } from "lucide-react";
 import { useSubjectContext } from "@/context/SubjectContext";
 
 const Index = () => {
@@ -38,9 +38,9 @@ const Index = () => {
       description: "Create and practice with flashcards to reinforce your learning",
     },
     {
-      icon: <Clock className="h-10 w-10 text-purple-500" />,
-      title: "Progress Tracking",
-      description: "Monitor your study hours and completed sessions",
+      icon: <FileText className="h-10 w-10 text-purple-500" />,
+      title: "Smart Notes",
+      description: "Get AI-powered summaries and generate flashcards from your notes",
     }
   ];
 
@@ -64,6 +64,51 @@ const Index = () => {
                 <Link to="/schedule">View Schedule</Link>
               </Button>
             </div>
+          </div>
+        </section>
+
+        {/* Quick Access Cards */}
+        <section className="py-6 animate-fade-in" style={{ animationDelay: "0.35s" }}>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <Card className="border shadow-sm hover:shadow-md transition-shadow">
+              <CardContent className="p-6">
+                <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+                  <div className="flex items-center gap-3">
+                    <FileText className="h-10 w-10 text-purple-500" />
+                    <div>
+                      <h3 className="text-lg font-medium">Smart Notes</h3>
+                      <p className="text-muted-foreground">Get AI summaries and generate flashcards</p>
+                    </div>
+                  </div>
+                  <Button asChild className="w-full md:w-auto">
+                    <Link to="/notes">
+                      Take Notes
+                      <ArrowRight className="ml-2 h-4 w-4" />
+                    </Link>
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+            
+            <Card className="border shadow-sm hover:shadow-md transition-shadow">
+              <CardContent className="p-6">
+                <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+                  <div className="flex items-center gap-3">
+                    <Lightbulb className="h-10 w-10 text-yellow-500" />
+                    <div>
+                      <h3 className="text-lg font-medium">Flashcards</h3>
+                      <p className="text-muted-foreground">Create and practice with flashcards</p>
+                    </div>
+                  </div>
+                  <Button asChild className="w-full md:w-auto">
+                    <Link to="/flashcards">
+                      Practice Now
+                      <ArrowRight className="ml-2 h-4 w-4" />
+                    </Link>
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
           </div>
         </section>
 
@@ -170,9 +215,14 @@ const Index = () => {
             <p className="text-muted-foreground mb-8">
               Start by adding your subjects and creating a personalized study plan.
             </p>
-            <Button asChild size="lg" className="rounded-full">
-              <Link to="/subjects">Get Started Now</Link>
-            </Button>
+            <div className="flex flex-col sm:flex-row justify-center gap-4">
+              <Button asChild size="lg" className="rounded-full">
+                <Link to="/subjects">Add Subjects</Link>
+              </Button>
+              <Button asChild variant="outline" size="lg" className="rounded-full">
+                <Link to="/notes">Take Notes</Link>
+              </Button>
+            </div>
           </div>
         </section>
       </div>

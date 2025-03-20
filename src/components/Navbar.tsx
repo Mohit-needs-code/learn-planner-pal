@@ -2,7 +2,7 @@
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
-import { Calendar, Book, Clock, ListChecks, Lightbulb } from "lucide-react";
+import { Calendar, Book, Clock, ListChecks, Lightbulb, FileText } from "lucide-react";
 
 const Navbar = () => {
   const location = useLocation();
@@ -12,6 +12,7 @@ const Navbar = () => {
     { path: "/subjects", label: "Subjects", icon: <Book className="h-5 w-5" /> },
     { path: "/schedule", label: "Schedule", icon: <Calendar className="h-5 w-5" /> },
     { path: "/flashcards", label: "Flashcards", icon: <Lightbulb className="h-5 w-5" /> },
+    { path: "/notes", label: "Notes", icon: <FileText className="h-5 w-5" /> },
   ];
 
   return (
