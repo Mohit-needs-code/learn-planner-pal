@@ -1,4 +1,3 @@
-
 import { pipeline, RawImage } from '@huggingface/transformers';
 import { Subject, FlashCard } from "@/context/SubjectContext";
 
@@ -32,8 +31,7 @@ export class MLModelManager {
           // Load text embedding model (for flashcard similarity, note processing)
           this.textEmbeddingModel = await pipeline(
             'feature-extraction',
-            'mixedbread-ai/mxbai-embed-xsmall-v1',
-            { quantized: true }
+            'mixedbread-ai/mxbai-embed-xsmall-v1'
           );
           
           console.log("Text embedding model loaded");
@@ -41,8 +39,7 @@ export class MLModelManager {
           // Load text classification model (for study performance prediction)
           this.textClassificationModel = await pipeline(
             'text-classification',
-            'distilbert-base-uncased-finetuned-sst-2-english',
-            { quantized: true }
+            'distilbert-base-uncased-finetuned-sst-2-english'
           );
           
           console.log("Text classification model loaded");
@@ -751,3 +748,4 @@ function basicProcessNotes(noteText: string) {
 export const mlManager = MLModelManager.getInstance();
 export const enhancedStudyOptimizer = new EnhancedStudyOptimizer();
 export const enhancedAdaptiveFlashcards = new EnhancedAdaptiveFlashcards();
+
