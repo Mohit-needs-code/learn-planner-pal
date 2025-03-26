@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -19,7 +18,7 @@ import {
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
-import MLStatusIndicator from "@/components/MLStatusIndicator";
+import { MLStatusIndicator } from "@/components/MLStatusIndicator";
 
 const NoteTaking = () => {
   const [notes, setNotes] = useState("");
@@ -34,7 +33,6 @@ const NoteTaking = () => {
   const [mlModelsLoaded, setMlModelsLoaded] = useState(false);
   const { subjects } = useSubjectContext();
 
-  // Check if ML models are loaded
   useEffect(() => {
     let mounted = true;
     
@@ -54,7 +52,6 @@ const NoteTaking = () => {
     
     checkMLStatus();
     
-    // Check status periodically
     const interval = setInterval(() => {
       if (mlManager.areModelsLoaded() && mounted) {
         setMlModelsLoaded(true);
@@ -84,11 +81,9 @@ const NoteTaking = () => {
       let result;
       
       if (useEnhancedML && mlModelsLoaded) {
-        // Use enhanced ML processing
         toast.info("Processing notes with enhanced ML models");
         result = await enhancedProcessNotes(notes, selectedSubject);
       } else {
-        // Use simulated ML processing
         if (useEnhancedML && !mlModelsLoaded) {
           toast.info("Enhanced ML models not ready yet, using basic processing");
         }
@@ -122,7 +117,6 @@ const NoteTaking = () => {
           </header>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {/* Note input section */}
             <div className="lg:col-span-2 animate-fade-in">
               <Card className="neomorphism border-0">
                 <CardHeader>
@@ -181,12 +175,10 @@ const NoteTaking = () => {
               </Card>
             </div>
 
-            {/* Results section */}
             <div className="animate-fade-in">
               <div className="space-y-6">
                 {processedData ? (
                   <>
-                    {/* Summary Card */}
                     <Card className="neomorphism border-0">
                       <CardHeader>
                         <CardTitle className="flex items-center">
@@ -202,7 +194,6 @@ const NoteTaking = () => {
                       </CardContent>
                     </Card>
 
-                    {/* Generated Questions Card */}
                     <Card className="neomorphism border-0">
                       <CardHeader>
                         <CardTitle className="flex items-center">
