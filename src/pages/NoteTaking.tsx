@@ -1,13 +1,14 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import NoteSummary from "@/components/NoteSummary";
 import GeneratedQuestions from "@/components/GeneratedQuestions";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Loader2, BookOpen, Brain, ListChecks } from "lucide-react";
+import { Loader2, BookOpen, Brain, ListChecks, FileText } from "lucide-react";
 import { toast } from "sonner";
 import { processNotes } from "@/utils/mlUtils";
+import { enhancedProcessNotes, mlManager } from "@/utils/realMlUtils";
 import { useSubjectContext } from "@/context/SubjectContext";
 import {
   Select,
@@ -16,6 +17,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
+import MLStatusIndicator from "@/components/MLStatusIndicator";
 
 const NoteTaking = () => {
   const [notes, setNotes] = useState("");
@@ -26,7 +30,43 @@ const NoteTaking = () => {
     generatedQuestions: Array<{ question: string; answer: string }>;
   } | null>(null);
   const [selectedSubject, setSelectedSubject] = useState("");
+  const [useEnhancedML, setUseEnhancedML] = useState(true);
+  const [mlModelsLoaded, setMlModelsLoaded] = useState(false);
   const { subjects } = useSubjectContext();
+
+  // Check if ML models are loaded
+  useEffect(() => {
+    let mounted = true;
+    
+    const checkMLStatus = async () => {
+      try {
+        await mlManager.initModels();
+        if (mounted) {
+          setMlModelsLoaded(mlManager.areModelsLoaded());
+        }
+      } catch (error) {
+        console.error("Error initializing ML models:", error);
+        if (mounted) {
+          setMlModelsLoaded(false);
+        }
+      }
+    };
+    
+    checkMLStatus();
+    
+    // Check status periodically
+    const interval = setInterval(() => {
+      if (mlManager.areModelsLoaded() && mounted) {
+        setMlModelsLoaded(true);
+        clearInterval(interval);
+      }
+    }, 2000);
+    
+    return () => {
+      mounted = false;
+      clearInterval(interval);
+    };
+  }, []);
 
   const handleProcessNotes = async () => {
     if (!notes.trim()) {
@@ -41,8 +81,20 @@ const NoteTaking = () => {
 
     setLoading(true);
     try {
-      // Process the notes using our ML utility
-      const result = await processNotes(notes, selectedSubject);
+      let result;
+      
+      if (useEnhancedML && mlModelsLoaded) {
+        // Use enhanced ML processing
+        toast.info("Processing notes with enhanced ML models");
+        result = await enhancedProcessNotes(notes, selectedSubject);
+      } else {
+        // Use simulated ML processing
+        if (useEnhancedML && !mlModelsLoaded) {
+          toast.info("Enhanced ML models not ready yet, using basic processing");
+        }
+        result = await processNotes(notes, selectedSubject);
+      }
+      
       setProcessedData(result);
       toast.success("Notes processed successfully!");
     } catch (error) {
@@ -65,6 +117,7 @@ const NoteTaking = () => {
                   Take notes and get AI-powered summaries and flashcards
                 </p>
               </div>
+              <MLStatusIndicator isLoaded={mlModelsLoaded} />
             </div>
           </header>
 
@@ -93,6 +146,15 @@ const NoteTaking = () => {
                         ))}
                       </SelectContent>
                     </Select>
+                  </div>
+                  
+                  <div className="flex items-center space-x-2">
+                    <Switch 
+                      id="use-enhanced-ml" 
+                      checked={useEnhancedML} 
+                      onCheckedChange={setUseEnhancedML}
+                    />
+                    <Label htmlFor="use-enhanced-ml">Use enhanced ML models</Label>
                   </div>
                   
                   <Textarea
