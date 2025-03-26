@@ -8,7 +8,7 @@ interface MLStatusIndicatorProps {
   isLoaded: boolean;
 }
 
-const MLStatusIndicator = ({ isLoaded }: MLStatusIndicatorProps) => {
+export const MLStatusIndicator = ({ isLoaded }: MLStatusIndicatorProps) => {
   return (
     <TooltipProvider>
       <Tooltip>
@@ -30,5 +30,3 @@ const MLStatusIndicator = ({ isLoaded }: MLStatusIndicatorProps) => {
     </TooltipProvider>
   );
 };
-
-export default MLStatusIndicator;

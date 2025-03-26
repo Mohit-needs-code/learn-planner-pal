@@ -5,6 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Calendar, Book, Lightbulb, Clock, ArrowRight, FileText } from "lucide-react";
 import { useSubjectContext } from "@/context/SubjectContext";
+import { MLStatusIndicator } from "@/components/MLStatusIndicator";
+import { mlManager } from "@/utils/realMlUtils";
 
 const Index = () => {
   const { subjects, schedule } = useSubjectContext();
@@ -45,10 +47,18 @@ const Index = () => {
   ];
 
   return (
-    <div className="min-h-screen pt-20 pb-16 md:pb-8">
-      <div className="container px-4 mx-auto">
+    <div className="notebook-page pt-20 pb-16 md:pb-8 overflow-x-hidden">
+      {/* Punch holes */}
+      <div className="punchhole punchhole-1"></div>
+      <div className="punchhole punchhole-2"></div>
+      <div className="punchhole punchhole-3"></div>
+      <div className="punchhole punchhole-4"></div>
+      
+      <div className="container px-4 mx-auto relative">
+        <div className="pencil"></div>
+
         {/* Hero section */}
-        <section className="py-12 md:py-20 animate-fade-in">
+        <section className="py-12 md:py-20 animate-fade-in relative">
           <div className="max-w-3xl mx-auto text-center">
             <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-6 animate-scale-in">
               Master Your Studies with Personalized Planning
@@ -64,13 +74,17 @@ const Index = () => {
                 <Link to="/schedule">View Schedule</Link>
               </Button>
             </div>
+            <div className="mt-4 flex justify-center">
+              <MLStatusIndicator isLoaded={mlManager.areModelsLoaded()} />
+            </div>
           </div>
         </section>
 
         {/* Quick Access Cards */}
         <section className="py-6 animate-fade-in" style={{ animationDelay: "0.35s" }}>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <Card className="border shadow-sm hover:shadow-md transition-shadow">
+            <Card className="notebook-card border shadow-sm hover:shadow-md transition-shadow relative">
+              <div className="paper-clip"></div>
               <CardContent className="p-6">
                 <div className="flex flex-col md:flex-row justify-between items-center gap-4">
                   <div className="flex items-center gap-3">
@@ -90,7 +104,8 @@ const Index = () => {
               </CardContent>
             </Card>
             
-            <Card className="border shadow-sm hover:shadow-md transition-shadow">
+            <Card className="notebook-card border shadow-sm hover:shadow-md transition-shadow relative">
+              <div className="paper-clip"></div>
               <CardContent className="p-6">
                 <div className="flex flex-col md:flex-row justify-between items-center gap-4">
                   <div className="flex items-center gap-3">
@@ -115,40 +130,28 @@ const Index = () => {
         {/* Stats section */}
         {(subjects.length > 0 || schedule.length > 0) && (
           <section className="py-10 animate-fade-in" style={{ animationDelay: "0.4s" }}>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <Card className="neomorphism border-0">
-                <CardContent className="p-6">
-                  <div className="flex flex-col items-center text-center">
-                    <Book className="h-8 w-8 text-primary mb-3" />
-                    <h3 className="text-2xl font-bold mb-2">{subjects.length}</h3>
-                    <p className="text-muted-foreground">Subjects Added</p>
+            <div className="sticky-note mx-auto max-w-md my-8 transform rotate-[-1deg] relative rounded shadow-md">
+              <div className="p-4">
+                <h3 className="text-xl font-semibold mb-3 text-center">Your Progress</h3>
+                <div className="grid grid-cols-3 gap-3">
+                  <div className="text-center p-2">
+                    <div className="text-2xl font-bold">{subjects.length}</div>
+                    <div className="text-sm text-gray-600">Subjects</div>
                   </div>
-                </CardContent>
-              </Card>
-              
-              <Card className="neomorphism border-0">
-                <CardContent className="p-6">
-                  <div className="flex flex-col items-center text-center">
-                    <Calendar className="h-8 w-8 text-primary mb-3" />
-                    <h3 className="text-2xl font-bold mb-2">{totalSessionsCount}</h3>
-                    <p className="text-muted-foreground">Study Sessions</p>
+                  <div className="text-center p-2">
+                    <div className="text-2xl font-bold">{totalSessionsCount}</div>
+                    <div className="text-sm text-gray-600">Sessions</div>
                   </div>
-                </CardContent>
-              </Card>
-              
-              <Card className="neomorphism border-0">
-                <CardContent className="p-6">
-                  <div className="flex flex-col items-center text-center">
-                    <Clock className="h-8 w-8 text-primary mb-3" />
-                    <h3 className="text-2xl font-bold mb-2">
+                  <div className="text-center p-2">
+                    <div className="text-2xl font-bold">
                       {completedSessions > 0 && totalSessionsCount > 0
                         ? Math.round((completedSessions / totalSessionsCount) * 100)
                         : 0}%
-                    </h3>
-                    <p className="text-muted-foreground">Completion Rate</p>
+                    </div>
+                    <div className="text-sm text-gray-600">Completed</div>
                   </div>
-                </CardContent>
-              </Card>
+                </div>
+              </div>
             </div>
           </section>
         )}
@@ -156,7 +159,7 @@ const Index = () => {
         {/* Next session prompt */}
         {nextSession && (
           <section className="py-6 animate-fade-in" style={{ animationDelay: "0.5s" }}>
-            <Card className="border shadow-soft hover:shadow-md transition-shadow">
+            <Card className="notebook-card border shadow-soft hover:shadow-md transition-shadow">
               <CardContent className="p-6">
                 <div className="flex flex-col md:flex-row justify-between items-center">
                   <div>
@@ -190,7 +193,7 @@ const Index = () => {
             {features.map((feature, index) => (
               <Card 
                 key={index} 
-                className="neomorphism border-0 overflow-hidden"
+                className="notebook-card border-0 overflow-hidden relative"
               >
                 <CardContent className="p-6">
                   <div className="flex gap-5">

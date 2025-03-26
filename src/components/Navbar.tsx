@@ -3,6 +3,8 @@ import React from "react";
 import { Link, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { Calendar, Book, Clock, ListChecks, Lightbulb, FileText } from "lucide-react";
+import { MLStatusIndicator } from "./MLStatusIndicator";
+import { mlManager } from "@/utils/realMlUtils";
 
 const Navbar = () => {
   const location = useLocation();
@@ -16,7 +18,7 @@ const Navbar = () => {
   ];
 
   return (
-    <header className="fixed top-0 left-0 right-0 w-full z-50 glassmorphism border-b border-gray-100">
+    <header className="fixed top-0 left-0 right-0 w-full z-50 notebook-header">
       <div className="container mx-auto px-6 py-4">
         <div className="flex items-center justify-between">
           <Link 
@@ -27,23 +29,26 @@ const Navbar = () => {
             <span>StudyPlanner</span>
           </Link>
 
-          <nav className="hidden md:flex items-center space-x-1">
-            {navItems.map((item) => (
-              <Link
-                key={item.path}
-                to={item.path}
-                className={cn(
-                  "px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 flex items-center space-x-2",
-                  location.pathname === item.path
-                    ? "bg-primary text-white"
-                    : "text-gray-600 hover:bg-gray-100"
-                )}
-              >
-                {item.icon}
-                <span>{item.label}</span>
-              </Link>
-            ))}
-          </nav>
+          <div className="hidden md:flex items-center gap-3">
+            <nav className="hidden md:flex items-center space-x-1">
+              {navItems.map((item) => (
+                <Link
+                  key={item.path}
+                  to={item.path}
+                  className={cn(
+                    "px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 flex items-center space-x-2",
+                    location.pathname === item.path
+                      ? "bg-primary text-white"
+                      : "text-gray-600 hover:bg-gray-100"
+                  )}
+                >
+                  {item.icon}
+                  <span>{item.label}</span>
+                </Link>
+              ))}
+            </nav>
+            <MLStatusIndicator isLoaded={mlManager.areModelsLoaded()} />
+          </div>
 
           <div className="md:hidden flex">
             {/* Mobile dropdown menu would go here */}
@@ -52,7 +57,7 @@ const Navbar = () => {
       </div>
 
       {/* Mobile navigation */}
-      <div className="md:hidden fixed bottom-0 left-0 right-0 glassmorphism border-t border-gray-100">
+      <div className="md:hidden fixed bottom-0 left-0 right-0 notebook-header border-t border-gray-200">
         <div className="flex justify-around py-3">
           {navItems.map((item) => (
             <Link
