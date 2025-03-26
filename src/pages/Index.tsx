@@ -47,7 +47,7 @@ const Index = () => {
   ];
 
   return (
-    <div className="notebook-page pt-20 pb-16 md:pb-8 overflow-x-hidden">
+    <div className="notebook-page pt-24 pb-20 md:pb-12 overflow-x-hidden">
       {/* Punch holes */}
       <div className="punchhole punchhole-1"></div>
       <div className="punchhole punchhole-2"></div>
@@ -56,21 +56,23 @@ const Index = () => {
       
       <div className="container px-4 mx-auto relative">
         <div className="pencil"></div>
+        <div className="paperclip"></div>
+        <div className="eraser"></div>
 
         {/* Hero section */}
-        <section className="py-12 md:py-20 animate-fade-in relative">
+        <section className="py-12 md:py-16 animate-fade-in relative">
           <div className="max-w-3xl mx-auto text-center">
-            <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-6 animate-scale-in">
+            <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-6 animate-scale-in handwritten-heading">
               Master Your Studies with Personalized Planning
             </h1>
-            <p className="text-lg text-muted-foreground mb-8 md:mb-10 max-w-2xl mx-auto animate-fade-in" style={{ animationDelay: "0.2s" }}>
+            <p className="text-lg text-muted-foreground mb-8 md:mb-10 max-w-2xl mx-auto animate-fade-in notebook-text" style={{ animationDelay: "0.2s" }}>
               Create tailored study schedules, track your progress, and ace your exams with our intelligent study planning system.
             </p>
             <div className="flex flex-col sm:flex-row justify-center gap-4 animate-fade-in" style={{ animationDelay: "0.3s" }}>
-              <Button asChild size="lg" className="rounded-full">
+              <Button asChild size="lg" className="notebook-button">
                 <Link to="/subjects">Get Started</Link>
               </Button>
-              <Button asChild variant="outline" size="lg" className="rounded-full">
+              <Button asChild variant="outline" size="lg" className="notebook-button-outline">
                 <Link to="/schedule">View Schedule</Link>
               </Button>
             </div>
@@ -94,7 +96,7 @@ const Index = () => {
                       <p className="text-muted-foreground">Get AI summaries and generate flashcards</p>
                     </div>
                   </div>
-                  <Button asChild className="w-full md:w-auto">
+                  <Button asChild className="notebook-button w-full md:w-auto">
                     <Link to="/notes">
                       Take Notes
                       <ArrowRight className="ml-2 h-4 w-4" />
@@ -115,7 +117,7 @@ const Index = () => {
                       <p className="text-muted-foreground">Create and practice with flashcards</p>
                     </div>
                   </div>
-                  <Button asChild className="w-full md:w-auto">
+                  <Button asChild className="notebook-button w-full md:w-auto">
                     <Link to="/flashcards">
                       Practice Now
                       <ArrowRight className="ml-2 h-4 w-4" />
@@ -174,7 +176,7 @@ const Index = () => {
                       })}
                     </p>
                   </div>
-                  <Button asChild className="mt-4 md:mt-0">
+                  <Button asChild className="notebook-button mt-4 md:mt-0">
                     <Link to="/schedule">
                       View Schedule
                       <ArrowRight className="ml-2 h-4 w-4" />
@@ -188,7 +190,7 @@ const Index = () => {
 
         {/* Features */}
         <section className="py-16 animate-fade-in" style={{ animationDelay: "0.6s" }}>
-          <h2 className="text-2xl md:text-3xl font-bold text-center mb-12">Plan Smarter, Study Better</h2>
+          <h2 className="text-2xl md:text-3xl font-bold text-center mb-12 handwritten-heading">Plan Smarter, Study Better</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {features.map((feature, index) => (
               <Card 
@@ -214,15 +216,15 @@ const Index = () => {
         {/* CTA */}
         <section className="py-12 text-center animate-fade-in" style={{ animationDelay: "0.7s" }}>
           <div className="max-w-2xl mx-auto">
-            <h2 className="text-2xl md:text-3xl font-bold mb-4">Ready to elevate your study experience?</h2>
+            <h2 className="text-2xl md:text-3xl font-bold mb-4 handwritten-heading">Ready to elevate your study experience?</h2>
             <p className="text-muted-foreground mb-8">
               Start by adding your subjects and creating a personalized study plan.
             </p>
             <div className="flex flex-col sm:flex-row justify-center gap-4">
-              <Button asChild size="lg" className="rounded-full">
+              <Button asChild size="lg" className="notebook-button">
                 <Link to="/subjects">Add Subjects</Link>
               </Button>
-              <Button asChild variant="outline" size="lg" className="rounded-full">
+              <Button asChild variant="outline" size="lg" className="notebook-button-outline">
                 <Link to="/notes">Take Notes</Link>
               </Button>
             </div>

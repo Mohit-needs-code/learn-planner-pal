@@ -3,6 +3,10 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Google Fonts imports */
+@import url('https://fonts.googleapis.com/css2?family=Caveat:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Patrick+Hand&display=swap');
+
 @layer base {
   :root {
     --background: 0 0% 100%;
@@ -119,9 +123,36 @@
     background-image: url("data:image/svg+xml,%3Csvg width='6' height='6' viewBox='0 0 6 6' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23e65c5c' fill-opacity='0.1' fill-rule='evenodd'%3E%3Cpath d='M5 0h1L0 5v1H0V0h5z'/%3E%3C/g%3E%3C/svg%3E");
   }
 
+  .handwritten-heading {
+    font-family: 'Caveat', cursive;
+    color: #2c3e50;
+  }
+
+  .notebook-text {
+    font-family: 'Patrick Hand', cursive;
+    line-height: 1.6;
+  }
+
+  .notebook-button {
+    @apply bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-md;
+    font-family: 'Patrick Hand', cursive;
+  }
+
+  .notebook-button-outline {
+    @apply bg-transparent hover:bg-gray-100 text-blue-600 border border-blue-600 font-medium rounded-md;
+    font-family: 'Patrick Hand', cursive;
+  }
+
   .paper-clip {
     @apply absolute -right-2 -top-2 w-10 h-10 rotate-12;
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' width='24' height='24' fill='none' stroke='%236b7280' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66l-9.2 9.19a2 2 0 01-2.83-2.83l8.49-8.48'/%3E%3C/svg%3E");
+    z-index: 10;
+  }
+
+  .paperclip {
+    @apply absolute right-12 top-12 w-16 h-16 rotate-[-12deg];
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' width='48' height='48' fill='none' stroke='%23475569' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66l-9.2 9.19a2 2 0 01-2.83-2.83l8.49-8.48'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
     z-index: 10;
   }
 
@@ -132,8 +163,16 @@
     z-index: 10;
   }
 
+  .eraser {
+    @apply absolute left-[25%] top-28 w-16 h-16 rotate-[30deg] opacity-10;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' width='48' height='48' fill='%23475569'%3E%3Cpath d='M16.24 3.56l4.95 4.94c.78.79.78 2.05 0 2.83L12 20.53a4.008 4.008 0 0 1-5.66 0L2.81 17.1c-.78-.78-.78-2.05 0-2.83l6.59-6.59c.98-.98 2.56-.98 3.54 0l1.42 1.42-8.02 8.02 3.54 3.54 8.02-8.02 1.42 1.42-8.02 8.02 1.42 1.42 8.02-8.02a1.992 1.992 0 0 0 0-2.83L16.24 3.56z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    z-index: 10;
+  }
+
   .sticky-note {
     @apply bg-yellow-100 p-4 rotate-[1deg] shadow-md;
+    box-shadow: 2px 3px 5px rgba(0,0,0,0.1);
   }
 
   .sticky-note::before {

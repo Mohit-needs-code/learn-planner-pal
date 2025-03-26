@@ -26,7 +26,7 @@ const Navbar = () => {
             className="flex items-center space-x-2 text-primary font-semibold text-xl transition-all hover:opacity-80"
           >
             <Clock className="h-6 w-6" />
-            <span>StudyPlanner</span>
+            <span className="handwritten-heading text-2xl">StudyPlanner</span>
           </Link>
 
           <div className="hidden md:flex items-center gap-3">
@@ -36,9 +36,9 @@ const Navbar = () => {
                   key={item.path}
                   to={item.path}
                   className={cn(
-                    "px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 flex items-center space-x-2",
+                    "px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 flex items-center space-x-2 notebook-text",
                     location.pathname === item.path
-                      ? "bg-primary text-white"
+                      ? "bg-blue-600 text-white"
                       : "text-gray-600 hover:bg-gray-100"
                   )}
                 >
@@ -64,9 +64,9 @@ const Navbar = () => {
               key={item.path}
               to={item.path}
               className={cn(
-                "flex flex-col items-center p-2 rounded-lg",
+                "flex flex-col items-center p-2 rounded-lg notebook-text",
                 location.pathname === item.path
-                  ? "text-primary"
+                  ? "text-blue-600"
                   : "text-gray-500"
               )}
             >
